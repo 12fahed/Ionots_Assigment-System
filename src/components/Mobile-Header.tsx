@@ -12,8 +12,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ModeToggle } from "./ui/modeToggle";
 import Image from "next/image";
-// import DevsDark from "@/public/images/devs-dark.png";
-// import DevsLight from "@/public/images/devs-light.png";
+
 import { useTheme } from "next-themes";
 import {
   DropdownMenu,
@@ -112,13 +111,6 @@ const MobileHeader = ({ userType }: { userType: string }) => {
       </Sheet>
 
       <div className="flex float-right space-x-3">
-        {/* <Image
-          src={theme == "dark" ? DevsDark : DevsLight}
-          alt="logo"
-          width={60}
-          height={60}
-          className="justify-end"
-        /> */}
         <ModeToggle />
       </div>
     </header>

@@ -39,12 +39,6 @@ const Header = ({ userType }: { userType: string }) => {
     <div className={`w-full border-b ${theme} hidden md:flex`}>
       <div className="flex items-center justify-between p-4 w-full">
         <div className="flex items-center">
-          {/* <Image
-            src={theme == "dark" ? DevsDark : DevsLight}
-            alt="logo"
-            width={65}
-            height={65}
-          /> */}
           <div className="ml-5 space-x-6">
             <LeftSideLinks userType={userType} />
           </div>
