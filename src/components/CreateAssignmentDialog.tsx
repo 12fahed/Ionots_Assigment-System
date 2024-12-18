@@ -21,12 +21,13 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { collection, getDocs, getFirestore, Timestamp, addDoc} from "firebase/firestore"
+import { collection, getDocs, getFirestore, Timestamp, addDoc, doc, getDoc, updateDoc, arrayUnion, arrayRemove} from "firebase/firestore"
 import { db } from "@/config/firebase";// Adjust the Firebase import to your setup.
 import { Popover, PopoverContent, PopoverTrigger } from "@radix-ui/react-popover"
 import { useToast } from "@/hooks/use-toast";
 import FileUpload from "@/components/FileUpload";
 import { Loader, PlusCircle } from "lucide-react";
+import { getApplicantUIDByGroupName } from "@/lib/getApplicantUID"
 
 export default function CreateAssignmentDialog() {
 
@@ -82,7 +83,7 @@ export default function CreateAssignmentDialog() {
               });
               return;
           }
-      }        
+      }
 
       const assignmentData = {
         title,
@@ -100,14 +101,37 @@ export default function CreateAssignmentDialog() {
       const docRef = await addDoc(collection(db, "Assigned"), assignmentData)
       console.log("Document written with ID:", docRef.id)
 
+      // Update the Applicant Doc
+      const applicantAssignedDoc = {
+        assignmentId: docRef.id,
+        accepted: false,
+        stage: 0,
+        submitted: false,
+        submittedFiles: [], 
+        remarks: "",
+        score: null,
+        evaluated: null,
+      }
+
+      let applicantUID 
+      if (group==="Yes"){
+        applicantUID =  await getApplicantUIDByGroupName(groupName[0])
+        applicantUID?.forEach( async (applicant) =>{
+          const docRef = doc(db, "Applicant", applicant)
+          await updateDoc(docRef, {assignmentTrack: arrayUnion(applicantAssignedDoc)})
+        } )
+      } else {
+        const docRef = doc(db, "Applicant", applicants[0])
+        await updateDoc(docRef, {assignmentTrack: arrayUnion(applicantAssignedDoc)})
+      }
+      
       toast({
         title: "Assignment Scheduled",
         description: "Assignment Scheduled has been successfull",
         className: "bg-[#3B82F6] text-white"
       });
       
-      // Close dialog and reset form variables
-      setIsOpen(false) // Close the dialog
+      setIsOpen(false)
       setTitle("")
       setSubject("")
       setGroup("No")

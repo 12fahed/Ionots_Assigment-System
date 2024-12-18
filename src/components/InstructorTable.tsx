@@ -96,7 +96,7 @@ export default function InstructorTable() {
         <Card className="w-[90%]">
         <CardHeader>
         <CardTitle className="flex justify-between w-full items-center">
-            <span className="text-3xl">Assigned Tasks</span>
+            <span className="text-3xl">Project Assignments</span>
             <div className="flex justify-end items-center">
                 <span className="text-sm">Create New Assignment</span>
                 <CreateAssignmentDialog />
@@ -113,7 +113,7 @@ export default function InstructorTable() {
                     <TableHead>Subject</TableHead>
                     <TableHead>Assigned To</TableHead>
                     <TableHead>Due Date</TableHead>
-                    <TableHead>Actions</TableHead>
+                    <TableHead>More Info</TableHead>
                 </TableRow>
                 </TableHeader>
                 <TableBody>
