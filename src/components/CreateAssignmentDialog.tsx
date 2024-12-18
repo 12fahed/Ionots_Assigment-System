@@ -14,6 +14,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Calendar } from "@/components/ui/calendar"
+import { Textarea } from "@/components/ui/textarea"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -25,21 +26,24 @@ import { db } from "@/config/firebase";// Adjust the Firebase import to your set
 import { Popover, PopoverContent, PopoverTrigger } from "@radix-ui/react-popover"
 import { useToast } from "@/hooks/use-toast";
 import FileUpload from "@/components/FileUpload";
+import { Loader, PlusCircle } from "lucide-react";
 
 export default function CreateAssignmentDialog() {
 
   const { toast } = useToast();
   const [title, setTitle] = useState("")
+  const [note, setNote] = useState("")
   const [subject, setSubject] = useState("")
   const [group, setGroup] = useState("No")
   const [groupName, setGroupName] = useState("")
   const [assignedTo, setAssignedTo] = useState<string>("")
   const [students, setStudents] = useState<{ id: string; name: string }[]>([])
   const [applicants, setApplicants] = useState<string[]>([])
-  const [startDate, setStartDate] = useState<Date | undefined>(new Date())
+  const [link, setLink] = useState("")
   const [endDate, setEndDate] = useState<Date | undefined>(new Date())
   const [isOpen, setIsOpen] = useState(false)
   const [uploadedFileUrl, setUploadedFileUrl] = useState<string>("");
+  const [loading, setLoading] = useState(false);
   
   const handleFileUploaded = (url: string) => {
     setUploadedFileUrl(url);
@@ -60,15 +64,37 @@ export default function CreateAssignmentDialog() {
 
   const handleSave = async () => {
     try {
+
+      setLoading(true);
+
+      const validationErrors = [
+          { condition: title === "", message: "Please Enter a Title" },
+          { condition: subject === "", message: "Please Select a Subject" },
+          { condition: group === "Yes" && groupName === "", message: "Please Enter a Group Name" },
+          { condition: group === "No" && assignedTo === "", message: "Please Select A Student" }
+      ];
+        
+      for (const { condition, message } of validationErrors) {
+          if (condition) {
+              toast({
+                  description: message,
+                  variant: "destructive",
+              });
+              return;
+          }
+      }        
+
       const assignmentData = {
         title,
         subject,
         group: group,
         groupName: group === "Yes" ? groupName : null,
         assignedTo: group === "No" ? applicants : [],
-        startDate: Timestamp.fromDate(startDate || new Date()),
+        link: link,
+        startDate: Timestamp.fromDate(new Date()),
         endDate: Timestamp.fromDate(endDate || new Date()),
-        file: [uploadedFileUrl]
+        file: [uploadedFileUrl],
+        note: note,
       }
   
       const docRef = await addDoc(collection(db, "Assigned"), assignmentData)
@@ -87,12 +113,15 @@ export default function CreateAssignmentDialog() {
       setGroup("No")
       setGroupName("")
       setAssignedTo("")
+      setLink("")
       setApplicants([])
-      setStartDate(new Date())
       setEndDate(new Date())
+      setNote("")
 
     } catch (error) {
       console.error("Error saving document: ", error)
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -100,7 +129,9 @@ export default function CreateAssignmentDialog() {
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       {/* Trigger Button */}
       <DialogTrigger asChild>
-        <Button className="w-[20%] m-5" variant="outline">Create New Assignment</Button>
+        <Button className="w-14 h-14 rounded-full m-5 flex items-center justify-center bg-[#e9f1ff] border-blue-500" variant="outline">
+          <PlusCircle className="w-6 h-6 text-blue-500" />
+        </Button>
       </DialogTrigger>
   
       {/* Dialog Content */}
@@ -219,27 +250,17 @@ export default function CreateAssignmentDialog() {
             </div>
           )}
   
-          {/* Start Date */}
+          {/* Link */}
           <div className="flex items-center gap-4">
-            <Label className="w-1/3 text-sm font-medium">Start Date</Label>
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  className="w-full justify-start text-left font-normal"
-                >
-                  {startDate ? startDate.toLocaleDateString() : "Pick a date"}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0" align="start">
-                <Calendar
-                  mode="single"
-                  selected={startDate}
-                  onSelect={setStartDate}
-                  className="rounded-md border shadow bg-[#ffffff]"
-                />
-              </PopoverContent>
-            </Popover>
+            <Label htmlFor="title" className="w-1/3 text-sm font-medium">
+              Example Link
+            </Label>
+            <Input
+              id="link"
+              value={link}
+              onChange={(e) => setLink(e.target.value)}
+              className="flex-1 rounded-md border p-2 text-sm"
+            />
           </div>
   
           {/* End Date */}
@@ -266,16 +287,36 @@ export default function CreateAssignmentDialog() {
           </div>
         </div>
 
-        <FileUpload onFileUploaded={handleFileUploaded} />
+        <div className="flex flex-row gap-4">
+            <FileUpload onFileUploaded={handleFileUploaded} />
+            {/* Note */}
+            <div className="flex flex-col w-full">
+                <Label htmlFor="note" className="text-sm font-medium mb-2">
+                    Enter Instructions
+                </Label>
+                <Textarea
+                    placeholder=""
+                    id="note"
+                    value={note}
+                    onChange={(e) => setNote(e.target.value)}
+                    className="w-full rounded-md border p-2 text-sm"
+                />
+            </div>
+        </div>
   
         {/* Footer */}
         <DialogFooter>
           <Button
             type="submit"
             onClick={handleSave}
+            disabled={uploadedFileUrl.length===0}
             className="w-full rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
           >
-            Save Assignment
+          {loading ? (
+            <Loader className="animate-spin w-5 h-5 text-white" />
+              ) : (
+                "Save Assignment"
+          )}
           </Button>
         </DialogFooter>
       </DialogContent>

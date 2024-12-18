@@ -2,6 +2,9 @@ import React, { useState } from "react";
 import { Button } from "./ui/button";
 import { Input } from "@/components/ui/input";
 import { FileIcon, defaultStyles, FileIconProps } from "react-file-icon";
+import { Loader } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+
 
 interface FileUploadProps {
   onFileUploaded: (url: string) => void;
@@ -9,6 +12,9 @@ interface FileUploadProps {
 
 const FileUpload: React.FC<FileUploadProps> = ({ onFileUploaded }) => {
   const [file, setFile] = useState<File | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [uploaded, setUploaded] = useState(false);
+  const { toast } = useToast();
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0] || null;
@@ -17,15 +23,24 @@ const FileUpload: React.FC<FileUploadProps> = ({ onFileUploaded }) => {
 
   const handleUpload = async () => {
     if (!file) {
-      alert("Please select a file first");
+      toast({
+        title: "Error",
+        description: "Please select a file",
+        variant: "destructive",
+      });
       return;
     }
 
     if (file.size > 10 * 1024 * 1024) {
-      alert("File size exceeds the limit of 10MB.");
+      toast({
+        title: "Error",
+        description: "File size exceeds the limit of 10MB.",
+        variant: "destructive",
+      });
       return;
     }
 
+    setLoading(true);
     try {
       const base64 = await toBase64(file);
 
@@ -40,11 +55,27 @@ const FileUpload: React.FC<FileUploadProps> = ({ onFileUploaded }) => {
       const data = await response.json();
       if (response.ok) {
         onFileUploaded(data.url);
+        setUploaded(true);
+        toast({
+          title: "Success",
+          description: "File Uploaded Successfully",
+        });
       } else {
-        alert(data.error || "Upload failed");
+        toast({
+          title: "Error",
+          description: "Upload failed",
+          variant: "destructive",
+        });
+        
       }
     } catch (error) {
-      alert("An unexpected error occurred. Please try again.");
+      toast({
+        title: "Error",
+        description: "An unexpected error occurred. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false); 
     }
   };
 
@@ -88,7 +119,9 @@ const FileUpload: React.FC<FileUploadProps> = ({ onFileUploaded }) => {
   return (
     <div className="flex flex-col items-center space-y-4 p-4">
       <div
-        className="w-[350px] p-6 border-2 border-dotted border-gray-400 rounded-lg flex flex-col items-center justify-center cursor-pointer"
+        className={`w-[350px] p-6 border-2 border-dotted border-gray-400 rounded-lg flex flex-col items-center justify-center cursor-pointer ${
+          uploaded ? "bg-green-100" : ""
+        }`}
         onDrop={handleDrop}
         onDragOver={handleDragOver}
       >
@@ -113,13 +146,20 @@ const FileUpload: React.FC<FileUploadProps> = ({ onFileUploaded }) => {
         )}
       </div>
 
-      <Button
+      {!uploaded && (
+        <Button
         onClick={handleUpload}
         className="bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition duration-300"
         disabled={!file}
       >
-        Upload File
+        {loading ? (
+          <Loader className="animate-spin w-5 h-5 text-white" />
+        ) : (
+          "Upload File"
+        )}
       </Button>
+      )}
+      
     </div>
   );
 
