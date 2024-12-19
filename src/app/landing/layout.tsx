@@ -43,8 +43,12 @@ export default function Home({
   return (
     <ProtectionProvider>
       <div className={`min-h-screen w-full ${theme}`}>
-        <Header userType={userType ? userType : ""} />
-        <MobileHeader userType={userType ? userType : ""} />
+        { userType && userType === "instructor" && (
+          <Header userType={userType ? userType : ""} />
+        ) }
+        { userType && userType === "instructor" && (
+          <MobileHeader userType={userType ? userType : ""} />
+        ) }
         <div className="flex flex-col mt-4">
           {userType == "applicant" && applicant}
           {userType == "instructor" && instructor}

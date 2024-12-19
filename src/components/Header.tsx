@@ -29,7 +29,7 @@ const Header = ({ userType }: { userType: string }) => {
       setLoggedIn(false);
       localStorage.removeItem("user");
       localStorage.removeItem("isLoggedIn");
-      router.push("/auth");
+      router.push("/");
     } catch (error) {
       console.error("Error signing out: ", error);
     }
