@@ -22,7 +22,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { collection, getDocs, getFirestore, Timestamp, addDoc, doc, getDoc, updateDoc, arrayUnion, arrayRemove} from "firebase/firestore"
-import { db } from "@/config/firebase";// Adjust the Firebase import to your setup.
+import { db } from "@/config/firebase";
 import { Popover, PopoverContent, PopoverTrigger } from "@radix-ui/react-popover"
 import { useToast } from "@/hooks/use-toast";
 import FileUpload from "@/components/FileUpload";
@@ -105,7 +105,7 @@ export default function CreateAssignmentDialog() {
       const applicantAssignedDoc = {
         assignmentId: docRef.id,
         accepted: false,
-        stage: 0,
+        stage: "Not Started",
         submitted: false,
         submittedFiles: [], 
         remarks: "",
