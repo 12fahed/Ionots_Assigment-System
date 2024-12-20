@@ -1,3 +1,5 @@
+"use client"
+
 import React, { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -6,9 +8,10 @@ import { FileIcon, defaultStyles } from 'react-file-icon';
 
 interface FileViewerModalProps {
   files: string[];
+  title: String,
 }
 
-const FileViewerModal: React.FC<FileViewerModalProps> = ({ files }) => {
+const FileViewerModal: React.FC<FileViewerModalProps> = ({ files, title }) => {
   const [selectedFile, setSelectedFile] = useState<string | null>(null);
 
   const getFileExtension = (url: string) => {
@@ -50,11 +53,11 @@ const FileViewerModal: React.FC<FileViewerModalProps> = ({ files }) => {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="outline">View Files</Button>
+        <Button variant="outline" className="bg-blue-500 text-white hover:bg-blue-700 border border-blue-500 rounded-lg py-2 px-4 focus:outline-none focus:ring-2 focus:ring-blue-500 hover:text-white">View Files</Button>
       </DialogTrigger>
       <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Assignment Files</DialogTitle>
+          <DialogTitle>{title}</DialogTitle>
         </DialogHeader>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {files.map((file, index) => {

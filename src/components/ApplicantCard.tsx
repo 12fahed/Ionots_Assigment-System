@@ -4,7 +4,7 @@ import React, { useState, useEffect, ReactNode } from 'react';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
-import { CalendarDays, Clock, FileText, GraduationCap } from 'lucide-react';
+import { CalendarDays, Clock, FileText, GraduationCap, Link } from 'lucide-react';
 import { db } from '@/config/firebase';
 import { doc, Timestamp, getDoc, updateDoc } from 'firebase/firestore';
 import { dateFormat } from '@/constants/dateFormat';
@@ -220,13 +220,15 @@ export function ApplicantCard({ assignment }: ApplicantCardProps) {
         <CardTitle className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div className="flex items-center gap-3">
             <span className="text-3xl font-bold">{assignmentDataJs.title}</span>
-            <span className="text-xs text-muted-foreground ml-2">Assigned on: {dateFormat(assignmentDataJs.startDate.seconds)}</span>
-            <Badge 
-              variant={userAssignmentData.evaluated ? 'default' : 'secondary'}
-              className="text-lg px-2 py-1"
-            >
-              {userAssignmentData.score}
-            </Badge>
+            <span className="text-xs text-muted-foreground ml-2">{assignmentDataJs.subject}</span>
+            {(userAssignmentData.evaluated) && (
+              <Badge 
+                variant={userAssignmentData.evaluated ? 'outline' : 'secondary'}
+                className="text-lg px-2 py-1"
+              >
+                {userAssignmentData.score}
+              </Badge>
+            )}
           </div>
           {!isAccepted && (
             <Button 
@@ -248,7 +250,8 @@ export function ApplicantCard({ assignment }: ApplicantCardProps) {
             <>
               {!userAssignmentData.submitted ? (
                 <SubmitAssignmentDialog onsubmit={(data:any) =>{  setSubmitAssignmentData(data); }}/>
-              ): <Button className='bg-green-400 text-white hover:bg-green-500 border border-green-500 rounded-lg py-2 px-4 focus:outline-none focus:ring-2 focus:ring-green-500'>View Submitted Assignment</Button>}
+              ): 
+                <Button className='bg-green-400 text-white hover:bg-green-500 border border-green-500 rounded-lg py-2 px-4 focus:outline-none focus:ring-2 focus:ring-green-500'>View Submitted Assignment</Button>}
             </>
           )}
         </CardTitle>
@@ -265,11 +268,27 @@ export function ApplicantCard({ assignment }: ApplicantCardProps) {
             </p>
           </div>
         )}
+        <Separator className="my-2"/>
+        {userAssignmentData.submitted && (
+          <div className="grid sm:grid-cols-2 gap-4">
+            <div className="flex items-center gap-2">
+              <CalendarDays className="h-5 w-5 text-muted-foreground" />
+              <span className="font-semibold">Submitted Date:</span>
+              <span>{dateFormat(userAssignmentData.submittedDate.seconds)}</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <CalendarDays className="h-5 w-5 text-muted-foreground" />
+              <span className="font-semibold">Grade:</span>
+              <span>{userAssignmentData.score}</span>
+            </div>
+          </div>
+        )}
+        <Separator className="my-2"/>
         <div className="grid sm:grid-cols-2 gap-4">
           <div className="flex items-center gap-2">
-            <GraduationCap className="h-5 w-5 text-muted-foreground" />
-            <span className="font-semibold">Subject:</span>
-            <span>{assignmentDataJs.subject}</span>
+            <CalendarDays className="h-5 w-5 text-muted-foreground" />
+            <span className="font-semibold">Assigned Date:</span>
+            <span>{dateFormat(assignmentDataJs.startDate.seconds)}</span>
           </div>
           <div className="flex items-center gap-2">
             <CalendarDays className="h-5 w-5 text-muted-foreground" />
@@ -278,12 +297,26 @@ export function ApplicantCard({ assignment }: ApplicantCardProps) {
           </div>
         </div>
         <Separator className="my-2"/>
-        <div className="">
-          <span className="font-semibold p-2">Assignment Files</span>
+        <div className="grid sm:grid-cols-2 gap-4">
           {assignmentDataJs.file && assignmentDataJs.file.length > 0 && (
-            <span className="mt-4">
-              <FileViewerModal files={assignmentDataJs.file} />
-            </span>
+            <div>
+              <span className="font-semibold p-2">Assignment Files</span>
+              <span className="mt-4">
+                <FileViewerModal files={assignmentDataJs.file} title="Assignment Files"/>
+              </span>
+            </div>
+          )}
+          {assignmentDataJs.link && (
+            <div>
+              <span className="font-semibold p-2">Example Link</span>
+              <span className="mt-4">
+                <a href={assignmentDataJs.link} target="_blank">
+                  <Button className="bg-blue-500 text-white hover:bg-blue-700 border border-blue-500 rounded-lg py-2 px-4 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    Link
+                  </Button>
+                </a>
+              </span>
+            </div>
           )}
         </div>
       </CardContent>
