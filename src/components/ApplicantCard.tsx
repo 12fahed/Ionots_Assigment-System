@@ -251,7 +251,8 @@ export function ApplicantCard({ assignment }: ApplicantCardProps) {
               {!userAssignmentData.submitted ? (
                 <SubmitAssignmentDialog onsubmit={(data:any) =>{  setSubmitAssignmentData(data); }}/>
               ): 
-                <Button className='bg-green-400 text-white hover:bg-green-500 border border-green-500 rounded-lg py-2 px-4 focus:outline-none focus:ring-2 focus:ring-green-500'>View Submitted Assignment</Button>}
+                <FileViewerModal files={userAssignmentData.submittedFiles} title="View Submitted Documents" submittedLink={userAssignmentData.submittedLink} submittedNote={userAssignmentData.submittedNote}/>
+              }
             </>
           )}
         </CardTitle>
@@ -302,7 +303,7 @@ export function ApplicantCard({ assignment }: ApplicantCardProps) {
             <div>
               <span className="font-semibold p-2">Assignment Files</span>
               <span className="mt-4">
-                <FileViewerModal files={assignmentDataJs.file} title="Assignment Files"/>
+                <FileViewerModal files={assignmentDataJs.file} title="Assignment Files" submittedLink="" submittedNote=""/>
               </span>
             </div>
           )}
