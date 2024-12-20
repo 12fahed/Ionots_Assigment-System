@@ -5,6 +5,7 @@ import {
   User,
   History,
   Lock,
+  Book,
 } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import React from "react";
@@ -68,6 +69,14 @@ const MobileHeader = ({ userType }: { userType: string }) => {
               <Home className="h-4 w-4" />
               Home
             </Link>
+            {(userType === "instructor") && (
+              <>
+                  <Link href="/landing/uploadAssignment" className={getLinkClasses("/landing/uploadAssignment")}>
+                  <Book className="h-4 w-4" />
+                  Upload Assignment
+                </Link>
+              </>
+            )}
           </nav>
 
           {/* Account Dropdown */}

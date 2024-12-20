@@ -59,8 +59,11 @@ const SignIn: React.FC = () => {
       });
   }, [])
 
-  const particlesLoaded = (container:any) => {
+  const particlesLoaded = (container: any): Promise<void> => {
+    return new Promise((resolve) => {
       console.log(container);
+      resolve();
+    });
   };
 
   useEffect(() => {
@@ -216,7 +219,9 @@ const SignIn: React.FC = () => {
               events: {
                 onClick: { enable: true, mode: "push" },
                 onHover: { enable: true, mode: "repulse" },
-                resize: true,
+                resize: {
+                  enable: true,
+                },
               },
               modes: {
                 push: { quantity: 4 },
@@ -241,7 +246,7 @@ const SignIn: React.FC = () => {
                 straight: false,
               },
               number: {
-                density: { enable: true, area: 800 },
+                density: { enable: true, height:800, width:800 },
                 value: 80,
               },
               opacity: { value: 0.5 },

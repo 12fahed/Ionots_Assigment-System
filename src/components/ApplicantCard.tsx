@@ -98,7 +98,14 @@ export function ApplicantCard({ assignment }: ApplicantCardProps) {
     const updateAssignment = async () => {
       if (!submitassignmentData) return;
   
-      console.log("INSIDE APPLICANT CARD USE EFFECT: ", submitassignmentData);
+      if (!uid) {
+        toast({
+          title: "Error",
+          description: "User not found. Please log in again.",
+          variant: "destructive",
+        });
+        return;
+      }
   
       try {
         setLoading(true);
@@ -155,6 +162,16 @@ export function ApplicantCard({ assignment }: ApplicantCardProps) {
   }, [submitassignmentData, uid, userAssignmentData, toast]);
   
   const handleAssignmentAccept = async () => {
+
+    if (!uid) {
+      toast({
+        title: "Error",
+        description: "User not found. Please log in again.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     try {
       setLoading(true);
       const docRef = doc(db, "Applicant", uid);
@@ -249,7 +266,9 @@ export function ApplicantCard({ assignment }: ApplicantCardProps) {
           {isAccepted && (
             <>
               {!userAssignmentData.submitted ? (
-                <SubmitAssignmentDialog onsubmit={(data:any) =>{  setSubmitAssignmentData(data); }}/>
+                <SubmitAssignmentDialog onsubmit={async (data: SubmitAssignmentData) => { 
+                  setSubmitAssignmentData(data); 
+                }} />
               ): 
                 <FileViewerModal files={userAssignmentData.submittedFiles} title="View Submitted Documents" submittedLink={userAssignmentData.submittedLink} submittedNote={userAssignmentData.submittedNote}/>
               }
@@ -268,6 +287,12 @@ export function ApplicantCard({ assignment }: ApplicantCardProps) {
               { !isAccepted ? `Please Accept your Assignmnet before due. ${assignmentDataJs.note}` : (assignmentDataJs.endDate.seconds < new Date().getTime()/ 1000) && !assignment.userAssignmentData.submitted ? `Your deadline for the assignment submission has expired. You can still upload the assignment with a note. ${assignmentDataJs.note}` : `${assignmentDataJs.note}` }
             </p>
           </div>
+        )}
+        {userAssignmentData.remarks!=="" && (
+          <Separator className="my-2"/>
+        )}
+        {userAssignmentData.remarks!=="" && (
+          <span className="font-semibold p-2 text-green-700">Remarks: {userAssignmentData.remarks}</span>
         )}
         {userAssignmentData.submitted && (
           <Separator className="my-2"/>

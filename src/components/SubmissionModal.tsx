@@ -13,7 +13,17 @@ import { useAssignment } from "@/contexts/AssignmentContext"
 import { useToast } from "@/hooks/use-toast";
 import { Loader } from "lucide-react";
 
-export function SubmitAssignmentDialog({ onsubmit }) {
+interface AssignmentData {
+  fileUrl: string;
+  assignmentLink: string;
+  notes: string;
+}
+
+interface SubmitAssignmentDialogProps {
+  onsubmit: (data: AssignmentData) => Promise<void>;
+}
+
+export function SubmitAssignmentDialog({ onsubmit }: SubmitAssignmentDialogProps) {
 
   const { toast } = useToast(); 
   const [isOpen, setIsOpen] = React.useState(false)

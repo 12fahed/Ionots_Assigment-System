@@ -22,6 +22,9 @@ interface Assignment {
     stage: 'Not Started' | 'In Progress' | 'Submitted' | 'Graded';
     submitted: boolean;
     submittedFiles: string[];
+    submittedLink: string,
+    submittedNote: string,
+    submittedDate: Timestamp
     remarks: string;
     score: number;
     evaluated: boolean

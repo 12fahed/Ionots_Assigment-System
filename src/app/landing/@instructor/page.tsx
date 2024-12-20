@@ -1,3 +1,5 @@
+"use client"
+
 import { ApplicantTable } from "@/components/InstructorEvaluationTable"
 
 export default function ApplicantsPage() {
