@@ -284,7 +284,7 @@ export function ApplicantCard({ assignment }: ApplicantCardProps) {
               <span className="font-semibold">Note</span>
             </div>
             <p className="text-red-700">
-              { !isAccepted ? `Please Accept your Assignmnet before due. ${assignmentDataJs.note}` : (assignmentDataJs.endDate.seconds < new Date().getTime()/ 1000) && !assignment.userAssignmentData.submitted ? `Your deadline for the assignment submission has expired. You can still upload the assignment with a note. ${assignmentDataJs.note}` : `${assignmentDataJs.note}` }
+              { (!isAccepted && (assignmentDataJs.endDate.seconds < new Date().getTime()/ 1000)) ? "Your deadline for the assignment submission has expired. You can still Accept the assignment and Submit with a note." : !isAccepted ? `Please Accept your Assignmnet before due. ${assignmentDataJs.note}` : (assignmentDataJs.endDate.seconds < new Date().getTime()/ 1000) && !assignment.userAssignmentData.submitted ? `Your deadline for the assignment submission has expired. You can still upload the assignment with a note. ${assignmentDataJs.note}` : `${assignmentDataJs.note}` }
             </p>
           </div>
         )}
