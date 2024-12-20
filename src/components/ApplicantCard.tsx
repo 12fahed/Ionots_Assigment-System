@@ -13,6 +13,7 @@ import { Loader } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Separator } from "@/components/ui/separator"
 import FileViewerModal from './FileViewerModal';
+import { SubmitAssignmentDialog } from './SubmissionModal';
 
 interface Assignment {
   accepted: boolean;
@@ -31,10 +32,19 @@ interface Assignment {
     stage: 'Not Started' | 'In Progress' | 'Submitted' | 'Graded';
     submitted: boolean;
     submittedFiles: string[];
+    submittedLink: string,
+    submittedNote: string,
+    submittedDate: Timestamp
     remarks: string;
     score: number;
     evaluated: boolean
   }
+}
+
+interface SubmitAssignmentData {
+  fileUrl: string;
+  assignmentLink: string;
+  notes: string;
 }
 
 interface ApplicantCardProps {
@@ -64,6 +74,7 @@ export function ApplicantCard({ assignment }: ApplicantCardProps) {
   const [loading, setLoading] = useState<boolean>(false);
   const [isAccepted, setIsAccepted] = useState(assignment.accepted);
   const [stage, setStage] = useState(assignment.userAssignmentData.stage)
+  const [submitassignmentData, setSubmitAssignmentData] = useState<SubmitAssignmentData | null>(null);
 
   const currentStep = statusToStep[userAssignmentData.stage];
   const progressPercentage = (currentStep / 4) * 100;
@@ -83,6 +94,66 @@ export function ApplicantCard({ assignment }: ApplicantCardProps) {
     setStage(assignment.userAssignmentData.stage);
   }, [assignment])
 
+  useEffect(() => {
+    const updateAssignment = async () => {
+      if (!submitassignmentData) return;
+  
+      console.log("INSIDE APPLICANT CARD USE EFFECT: ", submitassignmentData);
+  
+      try {
+        setLoading(true);
+  
+        const docRef = doc(db, "Applicant", uid);
+        const docSnap = await getDoc(docRef);
+  
+        if (docSnap.exists()) {
+          console.log("Document data:", docSnap.data());
+          const assignmentTrackData = docSnap.data().assignmentTrack || [];
+  
+          const updatedAssignments = assignmentTrackData.map((assignment:any) => {
+            if (assignment.assignmentId === userAssignmentData.assignmentId) {
+              return {
+                ...assignment,
+                stage: "Submitted",
+                submitted: true,
+                submittedFiles: [submitassignmentData.fileUrl],
+                submittedLink: submitassignmentData.assignmentLink,
+                submittedNote: submitassignmentData.notes,
+                submittedDate: new Date()
+              };
+            } 
+            return assignment;
+          });
+  
+          await updateDoc(docRef, {
+            assignmentTrack: updatedAssignments,
+          });
+  
+          toast({
+            title: "Accepted",
+            description: "Assignment accepted successfully!",
+            variant: "default",
+          });
+  
+          setStage("Submitted");
+        } else {
+          console.log("No such document!");
+        }
+      } catch (error) {
+        console.error("Error updating document:", error);
+        toast({
+          title: "Try again later",
+          description: "Assignment Cannot be Accepted",
+          variant: "destructive",
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+  
+    updateAssignment();
+  }, [submitassignmentData, uid, userAssignmentData, toast]);
+  
   const handleAssignmentAccept = async () => {
     try {
       setLoading(true);
@@ -149,6 +220,7 @@ export function ApplicantCard({ assignment }: ApplicantCardProps) {
         <CardTitle className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div className="flex items-center gap-3">
             <span className="text-3xl font-bold">{assignmentDataJs.title}</span>
+            <span className="text-xs text-muted-foreground ml-2">Assigned on: {dateFormat(assignmentDataJs.startDate.seconds)}</span>
             <Badge 
               variant={userAssignmentData.evaluated ? 'default' : 'secondary'}
               className="text-lg px-2 py-1"
@@ -173,21 +245,23 @@ export function ApplicantCard({ assignment }: ApplicantCardProps) {
             </Button>
           )}
           {isAccepted && (
-            <Button>
-              Submit Assignment
-            </Button>
+            <>
+              {!userAssignmentData.submitted ? (
+                <SubmitAssignmentDialog onsubmit={(data:any) =>{  setSubmitAssignmentData(data); }}/>
+              ): <Button className='bg-green-400 text-white hover:bg-green-500 border border-green-500 rounded-lg py-2 px-4 focus:outline-none focus:ring-2 focus:ring-green-500'>View Submitted Assignment</Button>}
+            </>
           )}
         </CardTitle>
       </CardHeader>
       <CardContent className="grid gap-6">
-        {(!isAccepted || (assignmentDataJs.note && isAccepted || (assignmentDataJs.endDate.seconds < new Date().getTime()/ 1000))) && (
+        {(!isAccepted || assignment.assignmentData.note || ( (assignmentDataJs.endDate.seconds < new Date().getTime()/ 1000) && !assignment.userAssignmentData.submitted )) && (
           <div className="bg-red-50 border border-red-200 rounded-lg p-4">
             <div className="flex items-center gap-2 text-red-700 mb-2">
               <FileText className="h-5 w-5" />
               <span className="font-semibold">Note</span>
             </div>
             <p className="text-red-700">
-              {(assignmentDataJs.endDate.seconds < new Date().getTime()/ 1000)? `YouThe deadline for the assignment submission has expired. You can still upload the assignment with a note. ${assignmentDataJs.note}` : !isAccepted ? "Please Accept the Assignment before due" : assignmentDataJs.note}
+              { !isAccepted ? `Please Accept your Assignmnet before due. ${assignmentDataJs.note}` : (assignmentDataJs.endDate.seconds < new Date().getTime()/ 1000) && !assignment.userAssignmentData.submitted ? `Your deadline for the assignment submission has expired. You can still upload the assignment with a note. ${assignmentDataJs.note}` : `${assignmentDataJs.note}` }
             </p>
           </div>
         )}

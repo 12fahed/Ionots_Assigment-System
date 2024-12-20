@@ -1,10 +1,11 @@
-"use  client"
+"use client"
+
 
 export default function Test(){
 
   return(
     <div>
-      Hello Test
+      Hello
     </div>
   )
 

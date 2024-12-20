@@ -89,14 +89,6 @@ const FileViewerModal: React.FC<FileViewerModalProps> = ({ files }) => {
             <DialogHeader>
               <DialogTitle className="flex justify-between items-center">
                 <span>File Preview</span>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => setSelectedFile(null)}
-                  aria-label="Close preview"
-                >
-                  <XIcon className="h-4 w-4" />
-                </Button>
               </DialogTitle>
             </DialogHeader>
             <div className="flex-grow overflow-auto">

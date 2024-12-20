@@ -6,6 +6,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/toaster";
 import type { Metadata } from "next";
 import { UserProvider } from "@/providers/UserProvider";
+import { AssignmentProvider } from "@/contexts/AssignmentContext";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -32,7 +33,9 @@ export default function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
-            {children}
+            <AssignmentProvider>
+              {children}
+            </AssignmentProvider>
             <Toaster />
           </ThemeProvider>
         </UserProvider>

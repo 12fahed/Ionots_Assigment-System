@@ -42,6 +42,9 @@ interface Assignment {
     stage: 'Not Started' | 'In Progress' | 'Submitted' | 'Graded';
     submitted: boolean;
     submittedFiles: string[];
+    submittedLink: string,
+    submittedNote: string,
+    submittedDate: Timestamp
     remarks: string;
     score: number;
     evaluated: boolean
@@ -123,6 +126,9 @@ export function ApplicantSideBar({ onAssignmentSelect }: ApplicantSideBarProps) 
                 stage: assignment.stage,
                 submitted: assignment.submitted,
                 submittedFiles: assignment.submittedFiles,
+                submittedLink: assignment.submittedLink,
+                submittedNote: assignment.submittedNote,
+                submittedDate: assignment.submittedDate,
                 remarks: assignment.remarks,
                 score: assignment.score,
                 evaluated: assignment.evaluated,

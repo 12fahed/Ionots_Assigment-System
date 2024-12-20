@@ -111,6 +111,9 @@ export default function CreateAssignmentDialog() {
         remarks: "",
         score: null,
         evaluated: null,
+        submittedLink: "",
+        submittedNote: "",
+        submittedDate: null,
       }
 
       let applicantUID 
