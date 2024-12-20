@@ -269,7 +269,9 @@ export function ApplicantCard({ assignment }: ApplicantCardProps) {
             </p>
           </div>
         )}
-        <Separator className="my-2"/>
+        {userAssignmentData.submitted && (
+          <Separator className="my-2"/>
+        )}
         {userAssignmentData.submitted && (
           <div className="grid sm:grid-cols-2 gap-4">
             <div className="flex items-center gap-2">

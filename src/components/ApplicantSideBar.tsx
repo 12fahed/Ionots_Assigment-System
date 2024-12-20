@@ -170,10 +170,16 @@ export function ApplicantSideBar({ onAssignmentSelect }: ApplicantSideBarProps) 
                     <div className="flex-1">
                       <h3 className="font-medium text-foreground">{assignment.title}</h3>
                       <p className="text-sm text-muted-foreground">{assignment.subject}</p>
-                      {assignment.accepted === false ? (
+                      {assignment.accepted === false && assignment.daysLeft > 0 ? (
                         <p className="mt-1 text-sm text-red-500">Click To Accept</p>
+                      ) : !assignment.userAssignmentData.submitted ? (
+                        assignment.daysLeft > 0 ? (
+                          <p className="mt-1 text-sm text-red-500">{assignment.daysLeft} days left to submit</p>
+                        ) : (
+                          <p className="mt-1 text-sm text-red-500">Submit The Assignment with a Note</p>
+                        )
                       ) : (
-                        <p className="mt-1 text-sm text-red-500">{assignment.daysLeft} days left to submit</p>
+                        <p className="mt-1 text-sm text-green-500">Assignment Submitted</p>
                       )}
                     </div>
                     <ChevronRight className="mt-1 h-5 w-5 text-muted-foreground" />

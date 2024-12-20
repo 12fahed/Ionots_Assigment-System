@@ -1,6 +1,7 @@
 "use client"
 
 import * as React from "react"
+import { useState } from "react"
 import { UploadIcon } from 'lucide-react'
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, } from "@/components/ui/dialog"
@@ -10,18 +11,20 @@ import { Label } from "@/components/ui/label"
 import FileUpload from "./FileUpload"
 import { useAssignment } from "@/contexts/AssignmentContext"
 import { useToast } from "@/hooks/use-toast";
+import { Loader } from "lucide-react";
 
 export function SubmitAssignmentDialog({ onsubmit }) {
 
   const { toast } = useToast(); 
   const [isOpen, setIsOpen] = React.useState(false)
   const { assignmentData, setAssignmentData } = useAssignment()
+  const [loading, setLoading] = useState<boolean>(false);
 
   const handleFileUploaded = (url: string) => {
     setAssignmentData(prev => ({ ...prev, fileUrl: url }))
   }
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
 
     if(assignmentData.fileUrl === "" || assignmentData.assignmentLink === ""){
 
@@ -35,9 +38,11 @@ export function SubmitAssignmentDialog({ onsubmit }) {
 
     }
 
-    // console.log("Assignment Data:", assignmentData)
-    onsubmit(assignmentData)
+    setLoading(true)
+    await onsubmit(assignmentData)
+    setLoading(false)
     setIsOpen(false)
+
     setAssignmentData({
       fileUrl: '',
       assignmentLink: '',
@@ -52,7 +57,7 @@ export function SubmitAssignmentDialog({ onsubmit }) {
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline" className="bg-blue-500 text-white hover:bg-blue-700 border border-blue-500 rounded-lg py-2 px-4 focus:outline-none focus:ring-2 focus:ring-blue-500">Submit Assignment</Button>
+        <Button variant="outline" className="bg-blue-500 text-white hover:bg-blue-700 border border-blue-500 rounded-lg py-2 px-4 focus:outline-none focus:ring-2 focus:ring-blue-500 hover:text-white">Submit Assignment</Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[525px]">
         <DialogHeader>
@@ -100,7 +105,16 @@ export function SubmitAssignmentDialog({ onsubmit }) {
 
           {/* Submit Button */}
           <div className="flex justify-end">
-            <Button onClick={handleSubmit}>Submit</Button>
+            <Button onClick={handleSubmit}>
+              {loading ? (
+                <>
+                  <Loader className="mr-2 h-4 w-4 animate-spin" />
+                  Submitting...
+                </>
+              ) : (
+                "Submit"
+              )}
+            </Button>
           </div>
         </div>
       </DialogContent>
