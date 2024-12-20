@@ -64,21 +64,10 @@ const MobileHeader = ({ userType }: { userType: string }) => {
           {/* Links */}
 
           <nav className="grid gap-2 text-sm font-medium mt-[20%] space-y-3">
-            <Link href="/dashboard" className={getLinkClasses("/dashboard")}>
+            <Link href="/landing" className={getLinkClasses("/landing")}>
               <Home className="h-4 w-4" />
               Home
             </Link>
-
-
-            {(userType === "hod" || userType === "principal" || userType === "examdept") && (
-                <>
-                  <Link href="/dashboard/history" className={getLinkClasses("/dashboard/history")}>
-                    <History className="h-4 w-4" />
-                    Past Notifications
-                  </Link>
-                </>
-            )}
-
           </nav>
 
           {/* Account Dropdown */}

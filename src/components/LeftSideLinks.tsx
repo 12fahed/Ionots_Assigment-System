@@ -5,6 +5,8 @@ import {
 import Link from "next/link";
 import React from "react";
 import { usePathname } from "next/navigation";
+import logo from "@/public/logo.png"
+import Image from "next/image";
 
 const LeftSideLinks = ({ userType }: { userType: string }) => {
   const pathname = usePathname();
@@ -16,20 +18,13 @@ const LeftSideLinks = ({ userType }: { userType: string }) => {
 
   return (
     <nav className="flex items-center px-2 text-sm font-medium lg:px-4 space-x-6">
-      <Link href="/dashboard" className={getLinkClasses("/dashboard")}>
-        <Home className="h-4 w-4" />
-        Home
-      </Link>
-
-      {(userType === "hod" || userType === "principal" || userType === "examdept") && (
-          <>
-            <Link href="/dashboard/history" className={getLinkClasses("/dashboard/history")}>
-              <History className="h-4 w-4" />
-              Past Notifications
-            </Link>
-          </>
-      )}
-
+      <Image
+        src={logo}
+        alt="logo"
+        width={100}
+        height={100}
+        className="rounded-md"
+      />
     </nav>
   );
 };

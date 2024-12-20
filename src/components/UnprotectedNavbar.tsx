@@ -1,7 +1,6 @@
 "use client";
 
 import React from "react";
-import { ModeToggle } from "./modeToggle";
 import Link from "next/link";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { Button } from "./ui/button";
@@ -36,7 +35,6 @@ export default function UnprotectedNavbar() {
               </Link>
             </Button>
           )}
-          <ModeToggle />
         </div>
       </div>
     </nav>
